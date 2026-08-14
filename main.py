@@ -6,6 +6,7 @@ import aiohttp
 import io
 from datetime import datetime, timedelta
 import random
+from aiohttp import web
 
 class Config:
     TOKEN = os.environ.get("DISCORD_TOKEN", "")
@@ -472,7 +473,6 @@ async def help(ctx):
     await ctx.send(embed=embed, allowed_mentions=mention_all())
 
 async def start_web_server():
-    from aiohttp import web
     app = web.Application()
     async def health(request):
         return web.Response(text="OK")
@@ -485,6 +485,7 @@ async def start_web_server():
     print(f"Web server on port {port}")
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     loop.run_until_complete(start_web_server())
     bot.run(config.TOKEN)
